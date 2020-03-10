@@ -2,6 +2,8 @@
 """
     Following PEP8 Style Guide and Google format function docstrings
     Website spider to extract list of URLs and saves to file.
+    root/
+    |_____file.json
 """
 
 # Standard library imports one per line
