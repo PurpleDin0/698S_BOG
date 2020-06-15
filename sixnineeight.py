@@ -27,8 +27,8 @@ __date__ = "10 March 2020"
 # Global variables
 visited = list()
 NAME = 'sixnineeight'
-ALLOWED_DOMAINS = 'cnn.com'
-URLS = 'http://www.cnn.com/'
+ALLOWED_DOMAINS = ''
+URLS = ''
 
 
 class SixnineeightSpider(scrapy.Spider):
@@ -44,7 +44,7 @@ class SixnineeightSpider(scrapy.Spider):
     allowed_domains = [ALLOWED_DOMAINS]
     start_urls = [URLS]
     custom_settings = {
-        'DEPTH_LIMIT': 0  # Gets deep quick...2 is very deep on large sites e.g. 45K+ unique links on CNN. 0=no limit
+        'DEPTH_LIMIT': 1  # Gets deep quick...2 is very deep on large sites e.g. 45K+ unique links on CNN. 0=no limit
     }
     rules = (
         Rule(
@@ -69,9 +69,6 @@ class SixnineeightSpider(scrapy.Spider):
                 link = link.split("#")[0]
             if link in visited or urljoin(URLS,
                                           link) in visited or "mailto:" in link or "tel:" in link or "javascript:" in link:
-                continue
-            elif response.status != 200:
-                visited.append(link)
                 continue
             else:
                 if ALLOWED_DOMAINS in link and link in urlparse(link).netloc:
@@ -107,9 +104,7 @@ if __name__ == '__main__':
             # 'FEED_FORMAT': 'pickle',
             # 'FEED_URI': 'file:///***/links.pkl',
             # 'LOG_LEVEL': 'INFO',  # Uncomment if you don't want scrapy to puke DEBUG to the console
-            #'DOWNLOAD_DELAY': 0.25,   # 250 ms of delay, default is random between 0.5 - 1.5
-            'CLOSESPIDER_PAGECOUNT': 100,  # Page limit for testing
-            'DOWNLOAD_TIMEOUT': 30,
+            # 'DOWNLOAD_DELAY': 0.25,   # 250 ms of delay, default is random between 0.5 - 1.5
             'TELNETCONSOLE_ENABLED': False,  # On by default...that's dumb ¯\_(ツ)_/¯
             'FEED_FORMAT': 'json',
             'FEED_URI': 'links.json',
