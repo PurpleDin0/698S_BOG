@@ -27,8 +27,8 @@ __date__ = "10 March 2020"
 # Global variables
 visited = list()
 NAME = 'sixnineeight'
-ALLOWED_DOMAINS = ''
-URLS = ''
+ALLOWED_DOMAINS = '' # Base URL goes here  ## USER UPDATEABLE VALUE! ##
+URLS = '' # Fully qualified domain goes here  ## USER UPDATEABLE VALUE! ##
 
 
 class SixnineeightSpider(scrapy.Spider):
@@ -73,7 +73,7 @@ class SixnineeightSpider(scrapy.Spider):
             else:
                 if ALLOWED_DOMAINS in link and link in urlparse(link).netloc:
                     if urlparse(link).scheme == '':
-                        link = urljoin(urlparse(URLS).scheme, link)
+                        link = urljoin(urlparse(URLS).scheme, urlparse(URLS).path, link)
                     visited.append(link)
                     yield {
                         "link": link
@@ -99,23 +99,49 @@ class SixnineeightSpider(scrapy.Spider):
 
 
 if __name__ == '__main__':
-    process = CrawlerProcess(
-        settings={
-            # 'FEED_FORMAT': 'pickle',
-            # 'FEED_URI': 'file:///***/links.pkl',
-            # 'LOG_LEVEL': 'INFO',  # Uncomment if you don't want scrapy to puke DEBUG to the console
-            # 'DOWNLOAD_DELAY': 0.25,   # 250 ms of delay, default is random between 0.5 - 1.5
-            'TELNETCONSOLE_ENABLED': False,  # On by default...that's dumb ¯\_(ツ)_/¯
-            'FEED_FORMAT': 'json',
-            'FEED_URI': 'links.json',
-            'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
-        }
-    )
-    process.crawl(SixnineeightSpider)
-    try:
-        process.start()
-        print("It worked!!")
-        print("Output {} file written to {}.".format(process.settings['FEED_FORMAT'], process.settings['FEED_URI']))
-        sys.exit()
-    except Exception as e:
-        sys.exit("Well, that didn't work... \n {}".format(e))
+  # Prints a banner
+  from time import time, ctime, strftime, gmtime
+
+  def elapsed(start_time):
+    """
+      Calcuilates the elapsed time of script start of exeution until
+      code completes. This allows for baselining different runtime enviroments
+    """
+    current_time = time()
+    elapsed_time = current_time - start_time
+    print("\n\n" + "~"*50)
+    print("             End : " + ctime(current_time))
+    print("        Run Time : " + strftime("%H:%M:%S", gmtime(elapsed_time)))
+    print("~"*50)
+
+  start_time = time()
+
+  banner('Running the Spider for links')
+
+  # Generic spider object with custom settings
+  process = CrawlerProcess(
+              settings={
+                # 'FEED_FORMAT': 'pickle',
+                # 'FEED_URI': 'file:///***/links.pkl',
+                # 'LOG_LEVEL': 'INFO',  # Uncomment if you don't want scrapy to puke DEBUG to the console
+                # 'DOWNLOAD_DELAY': 0.25,   # 250 ms of delay, default is random between 0.5 - 1.5
+                'TELNETCONSOLE_ENABLED': False,  # On by default...that's dumb ¯\_(ツ)_/¯
+                'FEED_FORMAT': 'json',
+                'FEED_URI': 'links.json',
+                'LOG_LEVEL': 'CRITICAL',
+                'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36',
+                'CLOSESPIDER_TIMEOUT': 60
+              } 
+            )
+
+  # Instantiates the custom spider class object
+  process.crawl(SixnineeightSpider)
+  try:
+      # Kick off the custom spider and crawl
+      process.start()
+
+      print("It worked!!")
+      print("Output {} file written to {}.".format(process.settings['FEED_FORMAT'], process.settings['FEED_URI']))
+      elapsed(start_time)
+  except Exception as e:
+      print("Well, that didn't work... \n {}".format(e))
