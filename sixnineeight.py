@@ -8,6 +8,7 @@
 
 # Standard library imports one per line
 import sys
+import argparse
 from urllib.parse import urlparse, urljoin
 
 # Third party library imports one per line
@@ -27,8 +28,14 @@ __date__ = "10 March 2020"
 # Global variables
 visited = list()
 NAME = 'sixnineeight'
-ALLOWED_DOMAINS = '' # Base URL goes here  ## USER UPDATEABLE VALUE! ##
-URLS = '' # Fully qualified domain goes here  ## USER UPDATEABLE VALUE! ##
+
+parser = argparse.ArgumentParser()
+parser.add_argument("ALLOWED_DOMAINS", help="The DOMAIN for the spider to crawl. Format: site.com")
+parser.add_argument("URLS", help="The URL for the spider to crawl. Format: https://www.site.com")
+args = parser.parse_args()
+
+ALLOWED_DOMAINS = args.ALLOWED_DOMAINS.split('=')[1] # Base URL goes here  ## USER UPDATEABLE VALUE! ##
+URLS = args.URLS.split('=')[1] # Fully qualified domain goes here  ## USER UPDATEABLE VALUE! ##
 
 
 class SixnineeightSpider(scrapy.Spider):
@@ -96,6 +103,16 @@ class SixnineeightSpider(scrapy.Spider):
                 yield scrapy.Request(next_page, callback=self.parse, dont_filter=True)
 
         pass
+
+
+# Cool banner printer
+def banner(t, s='~'):
+    l = s * (len(t) + 4)
+    print(l + '\n' + '{0} {1} {0}'.format(s, t) + '\n' + l)
+
+# Formatted line
+def line(t):
+  print("\n", "~"*(26-(len(t)//2)), t, "~"*(26-(len(t)//2)))
 
 
 if __name__ == '__main__':
